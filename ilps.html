@@ -1,0 +1,276 @@
+<html>
+  <head>
+    <title>IPA-to-ILPS transcriber</title>
+    <meta charset="UTF-8"></meta>
+    <style>
+      .cbody .carms {
+        stroke: black;
+      }
+    </style>
+  </head>
+  <body>
+    <!--<button onclick="addipa();">Add IPA string</button><button onclick="addnonipa();">Add Non-IPA phone</button>-->
+    <div id="input"></div>
+    <!--<input type="slider" min="1" max="50"></input>-->
+    <svg width="1000" height="500"><g id="out" stroke-width="1" stroke="black" fill="none" transform="scale(5)"></g></svg>
+    <script>
+      var cbody = function() {
+        return '<g class="cbody"><line x1="5" y1="30" x2="10" y2="22"></line><line x1="15" y1="30" x2="10" y2="22"></line><line x1="10" y1="22" x2="10" y2="15"></line><circle cx="10" cy="10" r="5"></circle></g>';
+      };
+      var cplace = function(pl, voice) {
+        var ret = '<g class="carms"' + (voice ? 'transform="scale(-1,1) translate(-20)"' : '') + ">";
+        var arms = '<line x1="5" y1="18" x2="15" y2="18"></line>';
+        switch (pl) {
+          case "bimanual":
+            ret += arms + '<line x1="5" y1="23" x2="5" y2="13"></line><rect x="0" y="13" width="5" height="3" fill="black"></rect>';
+            break;
+          case "faciomanual":
+            ret += arms + '<polygon points="5,18 0,14 0,22"></polygon>';
+            break;
+          case "bilabial":
+            ret += arms + '<line x1="6" y1="20" x2="1" y2="10"></line><line x1="2" y1="19" x2="7" y2="16"></line>';
+            break;
+          case "labiodental":
+            ret += arms + '<path d="M5,19 L3,8 C1,6 1,6 0,9 z"></path>';
+            break;
+          case "dental":
+            ret += arms + '<path d="M5,19 L4,16 l-3,-3 m3,3 l-2,-3 m2,3 l-1,-3 m1,3 l0,-3 m0,3 l1,-3 m-1,3"></path>';
+            break;
+          case "alveolar":
+            ret += '<line x1="10" y1="18" x2="5" y2="14"></line><line x1="10" y1="18" x2="5" y2="22"></line>';
+            break;
+          case "postalveolar":
+            ret += arms + '<circle cx="3" cy="18" r="2"></circle>';
+            break;
+          case "retroflex":
+            ret += arms + '<path d="M5,19 a 2 2 0 0,0 -4,0 V 30"></path>';
+            break;
+          case "palatal":
+            ret += arms + '<line x1="5" y1="30" x2="5" y2="14"></line>';
+            break;
+          case "velar":
+            ret += arms + '<polygon points="4,20 2,18 6,14"></polygon>';
+            break;
+          case "uvular":
+            ret += arms + '<line x1="5" y1="19" x2="3" y2="10"></line><ellipse cx="3" cy="7" rx="2" ry="3"></ellipse>';
+            break;
+          case "pharyngeal":
+            ret += '<line x1="10" y1="18" x2="5" y2="14"></line><line x1="10" y1="18" x2="5" y2="22"></line><polygon points="-3,14 -3,22 5,22 5,14"></polygon><circle cx="1" cy="18" r="3"></circle>';
+            break;
+          case "glottal":
+            ret += arms + '<path d="M15,18 L5,26 a 4 8 0 1,1 0,-16 z"></path><line x1="5" y1="18" x2="1" y2="18"></line>';
+            break;
+          default:
+            ret += "";
+        };
+        return ret + "</g>";
+      };
+      var cmanner = function(manner) {
+        switch (manner) {
+          case 'stop':
+            return '<polygon fill="black" points="3,6 17,6 14,6 14,2 6,2 6,6"></polygon>';
+          case 'trill':
+            return '<ellipse cx="10" cy="3" rx="4" ry="2"></ellipse>';
+          case 'tap':
+            return '<polyline points="5,8 5,0 7,3 10,0 13,3 15,0 15,8"></polyline>';
+          case 'approximant':
+            return '<path d="M12,6 C14,4 14,4 13,1 M8,6 C6,4 6,4 7,1"></path>';
+          case 'click':
+            return '<polygon points="6.5,6 13.5,6 10,0" fill="black"></polygon>';
+          default:
+            return "";
+        };
+      };
+      var cmodifier = function(mod) {
+        var ret = "<g>";
+        for (var i = 0; i < mod.length; i++) {
+          switch (mod[i]) {
+            case "nasal":
+              ret += '<polygon points="6.5,14 13.5,14 10,18" fill="black"></polygon>';
+              break;
+            case "lateral":
+              ret += '<ellipse cx="10" cy="18" rx="2" ry="3" fill="white"></ellipse>';
+              break;
+            case "aspirated":
+              ret += '<ellipse cx="16" cy="10" rx="1" ry="2"></ellipse><ellipse cx="4" cy="10" rx="1" ry="2"></ellipse>';
+              break;
+            case "ejective":
+              ret += '<line x1="14" y1="7" x2="19" y2="11"></line><line x1="6" y1="7" x2="1" y2="11"></line>';
+              break;
+            case "ingressive":
+              ret += '<rect x="5" y="27" width="3" height="3" fill="black"></rect><rect x="12" y="27" width="3" height="3" fill="black"></rect>';
+          };
+        }
+        return ret + '</g>';
+      };
+      var Xpos = 180;
+      var Ypos = 0;
+      var transform = function(inch, rotate, angle) {
+        var ch = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        console.log(rotate);
+        if (rotate) {
+          var rot = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          rot.appendChild(inch);
+          rot.setAttribute('transform', 'rotate(' + angle + ')');
+          ch.appendChild(rot);
+        } else {
+          ch.appendChild(inch);
+        }
+        document.getElementById('out').appendChild(ch);
+        var b = ch.getBBox();
+        console.log(b);
+        ch.setAttribute("transform", "translate(" + (Xpos - b.x + 5) + ',' + (Ypos + 35 - b.height - b.y) + ')');
+        Xpos += b.width + 5;
+        if (Xpos > 180) {
+          Xpos = 0;
+          Ypos += 40;
+        }
+      };
+      var addvowel = function(height, back, rounding, tense, glide) {
+        var ch = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        if (tense) {
+          ch.innerHTML += '<circle cx="5" cy="20" r="5"></circle><path d="M8,24 C15,30 15,30 22,24 h10 h-10 l2,-9 M7,30 l6,-8"></path>';
+          if (height == 'high') {
+            ch.innerHTML += '<polygon fill="black" points="-2,23 8,13 5.5,15.5 3,13 -2.5,18 0,21"></polygon>';
+          } else if (height == 'mid') {
+            ch.innerHTML += '<polyline points="6,15 1,10 1,13 -1,13 -1,16 -4.5,16 0,21"></polyline>';
+          } else {
+          }
+          if (back == 'front' || back == 'central') {
+            ch.innerHTML += '<line x1="15" y1="29" x2="16" y2="19"></line><line x1="13.5" y1="21" x2="18" y2="22"></line>';
+          }
+          if (back == 'central' || back == 'back') {
+            ch.innerHTML += '<path d="M19,27 l1,-7 l-2,-3 m2,3 l-0.5,-3 m0.5,3 l1,-3 m-1,3 l2,-2.5 m-2,2.5 l3,-2"></path>';
+          }
+        } else {
+          ch.innerHTML += '<circle cx="5" cy="22" r="5"></circle><path d="M10,22 h 9 l 6,6 m -6,-6 l 6,-6 m -12,1 v 10"></path>';
+          if (height == 'high') {
+            ch.innerHTML += '<polygon fill="black" points="2,29 2,15 2,18 -2,18 -2,26 2,26"></polygon>';
+          } else if (height == 'mid') {
+            ch.innerHTML += '<polyline points="3,17 -5,17 -2,20 -5,22 -2,24 -5,27 3,27"></polyline>';
+          } else {
+          }
+          if (back == 'front' || back == 'central') {
+            ch.innerHTML += '<line x1="15" y1="22" x2="16" y2="14"></line><line x1="13.5" y1="16" x2="18" y2="17"></line>';
+          }
+          if (back == 'central' || back == 'back') {
+            ch.innerHTML += '<path d="M17,22 l3,-7 l-2,-3 m2,3 l-0.5,-3 m0.5,3 l1,-3 m-1,3 l2,-2.5 m-2,2.5 l3,-2"></path>';
+          }
+        }
+        //Mathematician that I am, I still have no idea what these transformations are doing
+        //they were discovered by trial and error. - D.S. 2/27/17
+        if ((rounding && !glide) || (!rounding && glide)) {
+          ch.innerHTML = '<g transform="scale(-1,1)">' + ch.innerHTML + '</g>';
+        }
+        transform(ch, glide, rounding ? '90' : '-90');
+      };
+      var drawphone = function(phone) {
+        var ch = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        if (phone.isconsonant) {
+          ch.innerHTML = cbody() + cmanner(phone.manner) + cplace(phone.place, phone.voice) + cmodifier(phone.modifiers);
+          transform(ch, phone.syllabic, '-90');
+        } else {
+          addvowel(phone.height, phone.back, phone.rounding, phone.tense, phone.glide);
+        }
+      };
+      var ipa = {};
+      var c = function(ch, place, voice, manner, modifiers) {
+        ipa[ch] = {
+          isconsonant: true,
+          place: place,
+          voice: voice,
+          manner: manner,
+          modifiers: modifiers,
+          syllabic: false
+        };
+      };
+      var v = function(ch, height, back, rounding, tense, glide) {
+        ipa[ch] = {
+          isconsonant: false,
+          height: height,
+          back: back,
+          rounding: rounding,
+          tense: tense,
+          glide: glide
+        };
+      };
+      var getinput = function() {
+        var el = document.getElementById('input');
+        var ls = [];
+        for (var i = 0; i < el.childNodes.length; i++) {
+          if (el.childNodes[i].className == "ipastring") {
+            for (var j = 0; j < el.childNodes[i].value.length; j++) {
+              ls.push(ipa[el.childNodes[i].value[j]]);
+            }
+          }
+        }
+        return ls;
+      };
+      var addipa = function() {
+        document.getElementById('input').innerHTML += '<input type="text" class="ipastring" onkeyup="update();"></input>';
+      };
+      var update = function() {
+        document.getElementById('out').innerHTML = '';
+        Xpos = 0;
+        Ypos = 0;
+        var x = getinput();
+        for (var i = 0; i < x.length; i++) {
+          drawphone(x[i]);
+        }
+      };
+      addipa();
+      var addmanner = function(manner, voice, modifiers, chars) {
+        var places = ['bimanual', 'faciomanual', 'bilabial', 'labiodental', 'dental', 'alveolar', 'postalveolar', 'retroflex', 'palatal', 'velar', 'uvular', 'pharyngeal', 'glottal'];
+        for (var i = 0; i < places.length; i++) {
+          if (i < chars.length && chars[i] != ' ') {
+            c(chars[i], places[i], voice, manner, modifiers);
+          }
+        }
+      };
+      addmanner('stop', false, [], '  p  tʈckq ʔ');
+      addmanner('stop', true, [], '  b  dɖɟgɢ');
+      addmanner('stop', true, ['nasal'], '  mɱ n ɳɲŋɴ');
+      addmanner('trill', true, [], '  ʙ  r    ʀ');
+      addmanner('tap', true, [], '   ⱱ  ɾ ɽ');
+      addmanner('fricative', false, [], '  ɸfθsʃʂçxχħh');
+      addmanner('fricative', true, [], '  βvðzʒʐʝɣʁʕɦ');
+      c('ɬ', 'alveolar', false, 'fricative', ['lateral']);
+      c('ɮ', 'alveolar', true, 'fricative', ['lateral']);
+      addmanner('approximant', true, [], '   ʋ ɹ  ɻjɰ');
+      addmanner('approximant', true, ['lateral'], '     l ɭʎʟ');
+      v('i', 'high', 'front', false, true, false);
+      v('y', 'high', 'front', true, true, false);
+      v('ɨ', 'high', 'central', false, true, false);
+      v('ʉ', 'high', 'central', true, true, false);
+      v('ɯ', 'high', 'back', false, true, false);
+      v('u', 'high', 'back', true, true, false);
+      v('ɪ', 'high', 'front', false, false, false);
+      v('ʏ', 'high', 'front', true, false, false);
+      v('ʊ', 'high', 'back', true, false, false);
+      
+      v('e', 'mid', 'front', false, true, false);
+      v('ø', 'mid', 'front', true, true, false);
+      v('ɘ', 'mid', 'central', false, true, false);
+      v('ɵ', 'mid', 'central', true, true, false);
+      v('ɤ', 'mid', 'back', false, true, false);
+      v('o', 'mid', 'back', true, true, false);
+      v('ɛ', 'mid', 'front', false, false, false);
+      v('œ', 'mid', 'front', true, false, false);
+      v('ɜ', 'mid', 'central', false, false, false);
+      v('ə', 'mid', 'central', false, false, false);
+      v('ɐ', 'mid', 'central', false, false, false);
+      v('ɞ', 'mid', 'central', true, false, false);
+      v('ʌ', 'mid', 'back', false, false, false);
+      v('ɔ', 'mid', 'back', true, false, false);
+      
+      v('a', 'low', 'front', false, true, false);
+      v('ɶ', 'low', 'front', true, true, false);
+      v('ɑ', 'low', 'back', false, true, false);
+      v('ɒ', 'low', 'back', true, true, false);
+      v('æ', 'low', 'front', false, true, false);
+      
+      v('j', 'high', 'front', false, true, true);
+      v('w', 'high', 'back', true, true, true);
+    </script>
+  </body>
+</html>
