@@ -13,11 +13,12 @@
   </head>
   <body>
     <p>Type IPA into the box. Click <a href="https://crazyninjageeks.wordpress.com/2017/02/25/inter-lingual-personal-script/">here</a> for more information.</p>
-    <p>Some parts of the IPA may not be supported.</p>
+    <p>Suprasegmentals and tones are not currently implemented. Some other parts of the IPA may also not be supported.</p>
+    <input type="range" min="1" max="10" value="5" onchange="rescale(document.getElementById('scale').value);" id="scale">Scale</input>
+    <br>
     <button onclick="addipa();">Add IPA string</button><button onclick="entercons();">Add Consonant</button><button onclick="entervowel();">Add Vowel</button>
     <div id="input"></div>
-    <!--<input type="slider" min="1" max="50"></input>-->
-    <svg width="1000" height="500"><g id="out" stroke-width="1" stroke="black" fill="none" transform="scale(5)"></g></svg>
+    <svg width="1000" height="500" id="canvas"><g id="out" stroke-width="1" stroke="black" fill="none" transform="scale(5)"></g></svg>
     <script>
       var cbody = function() {
         return '<g class="cbody"><line x1="5" y1="30" x2="10" y2="22"></line><line x1="15" y1="30" x2="10" y2="22"></line><line x1="10" y1="22" x2="10" y2="15"></line><circle cx="10" cy="10" r="5"></circle></g>';
@@ -108,11 +109,16 @@
         }
         return ret + '</g>';
       };
-      var Xpos = 180;
+      var Xpos = 0;
       var Ypos = 0;
+      var Scale = 5;
+      var rescale = function(ns) {
+        Scale = ns;
+        document.getElementById('out').setAttribute('transform', 'scale(' + Scale + ')');
+        update();
+      };
       var transform = function(inch, rotate, angle) {
         var ch = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        console.log(rotate);
         if (rotate) {
           var rot = document.createElementNS('http://www.w3.org/2000/svg', 'g');
           rot.appendChild(inch);
@@ -123,10 +129,9 @@
         }
         document.getElementById('out').appendChild(ch);
         var b = ch.getBBox();
-        console.log(b);
         ch.setAttribute("transform", "translate(" + (Xpos - b.x + 5) + ',' + (Ypos + 35 - b.height - b.y) + ')');
         Xpos += b.width + 5;
-        if (Xpos > 180) {
+        if (Xpos + 20 > document.getElementById('canvas').getAttribute('width') / Scale) {
           Xpos = 0;
           Ypos += 40;
         }
@@ -176,6 +181,10 @@
           transform(ch, phone.syllabic, '-90');
         } else {
           addvowel(phone.height, phone.back, phone.rounding, phone.tense, phone.glide);
+        }
+        var svg = document.getElementById('canvas');
+        if ((Ypos + 40) * Scale >= svg.getAttribute('height')) {
+          svg.setAttribute('height', (YPos + 80)*Scale);
         }
       };
       var ipa = {};
@@ -293,7 +302,6 @@
         document.getElementById('input').innerHTML += '<div class="vowelinput"><span>height: </span><select onchange="update();"><option value="high">high</option><option value="mid">mid</option><option value="low">low</option></select><span>backness: </span><select onchange="update();"><option value="front">front</option><option value="central">central</option><option value="back">back</option></select><br><input type="checkbox" onchange="update();"></input><span>rounded</span><input type="checkbox" onchange="update();"></input><span>tense</span><input type="checkbox" onchange="update();"></input><span>glide</span><br><span class="delete" onclick="removeinput(event);">X</span></div>';
       };
       var removeinput = function(event) {
-        console.log(event);
         event.toElement.parentNode.outerHTML = '';
         update();
       };
