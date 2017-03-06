@@ -184,7 +184,7 @@
         }
         var svg = document.getElementById('canvas');
         if ((Ypos + 40) * Scale >= svg.getAttribute('height')) {
-          svg.setAttribute('height', (YPos + 80)*Scale);
+          svg.setAttribute('height', (Ypos + 80)*Scale);
         }
       };
       var ipa = {};
@@ -209,7 +209,7 @@
         };
       };
       var places = ['bimanual', 'faciomanual', 'bilabial', 'labiodental', 'dental', 'alveolar', 'postalveolar', 'retroflex', 'palatal', 'velar', 'uvular', 'pharyngeal', 'glottal'];
-      var manners = ['stop', 'trill', 'tap', 'approximant', 'click'];
+      var manners = ['stop', 'fricative', 'trill', 'tap', 'approximant', 'click'];
       var modifiers = ['nasal', 'lateral', 'ejective', 'ingressive', 'aspirated'];
       var getinput = function() {
         var el = document.getElementById('input');
@@ -280,10 +280,13 @@
         return ls;
       };
       var addipa = function() {
-        document.getElementById('input').innerHTML += '<div class="ipastring"><input type="text" onkeyup="update();"></input><span class="delete" onclick="removeinput(event);">X</span></div>';
+        var div = document.createElement('div');
+        div.className = 'ipastring';
+        div.innerHTML = '<input type="text" onkeyup="update();"></input><span class="delete" onclick="removeinput(event);">X</span>';
+        document.getElementById('input').appendChild(div);
       };
       var entercons = function() {
-        var str = '<div class="consonantinput"><span>place: </span><select class="place" onchange="update();">';
+        var str = '<span>place: </span><select class="place" onchange="update();">';
         for (var i = 0; i < places.length; i++) {
           str += '<option value="' + places[i] + '">' + places[i] + '</option>';
         }
@@ -296,10 +299,18 @@
           str += '<input type="checkbox" onchange="update();" value="' + modifiers[m] + '"></input><span>' + modifiers[m] + '</span>';
         }
         str += '<br><span class="delete" onclick="removeinput(event);">X</span>';
-        document.getElementById('input').innerHTML += str + '</div>';
+        var div = document.createElement('div');
+        div.innerHTML = str;
+        div.className = 'consonantinput';
+        document.getElementById('input').appendChild(div);
+        update();
       };
       var entervowel = function() {
-        document.getElementById('input').innerHTML += '<div class="vowelinput"><span>height: </span><select onchange="update();"><option value="high">high</option><option value="mid">mid</option><option value="low">low</option></select><span>backness: </span><select onchange="update();"><option value="front">front</option><option value="central">central</option><option value="back">back</option></select><br><input type="checkbox" onchange="update();"></input><span>rounded</span><input type="checkbox" onchange="update();"></input><span>tense</span><input type="checkbox" onchange="update();"></input><span>glide</span><br><span class="delete" onclick="removeinput(event);">X</span></div>';
+        var div = document.createElement('div');
+        div.className = 'vowelinput';
+        div.innerHTML = '<span>height: </span><select onchange="update();"><option value="high">high</option><option value="mid">mid</option><option value="low">low</option></select><span>backness: </span><select onchange="update();"><option value="front">front</option><option value="central">central</option><option value="back">back</option></select><br><input type="checkbox" onchange="update();"></input><span>rounded</span><input type="checkbox" onchange="update();"></input><span>tense</span><input type="checkbox" onchange="update();"></input><span>glide</span><br><span class="delete" onclick="removeinput(event);">X</span>';
+        document.getElementById('input').appendChild(div);
+        update();
       };
       var removeinput = function(event) {
         event.toElement.parentNode.outerHTML = '';
