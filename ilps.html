@@ -139,8 +139,7 @@
         var b = ch.getBBox();
         ch.setAttribute("transform", "translate(" + (Xpos - b.x + 5) + ',0)');
         Xpos += b.width + 5;
-        var bl = line.getBBox();
-        if (bl.width > document.getElementById('canvas').getAttribute('width') / Scale) {
+        if (Xpos > document.getElementById('canvas').getAttribute('width') / Scale) {
           canvas.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'g'));
           line.removeChild(ch);
           canvas.lastChild.appendChild(ch);
@@ -352,7 +351,6 @@
           drawphone(x[i]);
         }
         var y = 5;
-        var w = 1000;
         for (var i = 0; i < canvas.children.length; i++)
         {
           var b = canvas.children[i].getBBox();
@@ -361,12 +359,8 @@
           }
           canvas.children[i].setAttribute('transform', 'translate(0,'+y+')');
           y += 5;
-          if (b.width > w) {
-            w = b.width;
-          }
         }
         document.getElementById('canvas').setAttribute('height', (y+80)*Scale);
-        document.getElementById('canvas').setAttribute('width', w);
       };
       addipa();
       var addmanner = function(manner, voice, modifiers, chars) {
