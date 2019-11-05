@@ -233,7 +233,10 @@
           if (ent.className == "ipastring") {
             var s = ent.childNodes[0].value;
             for (var j = 0; j < s.length; j++) {
-              if (!ipa.hasOwnProperty(s[j])) {
+              if (s[j] == " ") {
+                ls.push(" ");
+                continue
+              } else if (!ipa.hasOwnProperty(s[j])) {
                 ls.push(null);
                 continue;
               }
@@ -348,7 +351,11 @@
         Xpos = 0;
         var x = getinput();
         for (var i = 0; i < x.length; i++) {
-          drawphone(x[i]);
+          if(x[i] == " ") {
+            Xpos += 15;
+          } else {
+            drawphone(x[i]);
+          }
         }
         var y = 5;
         for (var i = 0; i < canvas.children.length; i++)
@@ -370,19 +377,19 @@
           }
         }
       };
-      addmanner('stop', false, [], '  p  tʈckq ʔ');
-      addmanner('stop', true, [], '  b  dɖɟgɢ');
-      addmanner('stop', true, ['nasal'], '  mɱ n ɳɲŋɴ');
-      addmanner('trill', true, [], '  ʙ  r    ʀ');
-      addmanner('tap', true, [], '   ⱱ  ɾ ɽ');
-      addmanner('fricative', false, [], '  ɸfθsʃʂçxχħh');
-      addmanner('fricative', true, [], '  βvðzʒʐʝɣʁʕɦ');
+      addmanner('stop', false, [], '   p  tʈckq ʔ');
+      addmanner('stop', true, [], '   b  dɖɟgɢ');
+      addmanner('stop', true, ['nasal'], '   mɱ n ɳɲŋɴ');
+      addmanner('trill', true, [], '   ʙ  r    ʀ');
+      addmanner('tap', true, [], '    ⱱ  ɾ ɽ');
+      addmanner('fricative', false, [], '   ɸfθsʃʂçxχħh');
+      addmanner('fricative', true, [], '   βvðzʒʐʝɣʁʕɦ');
       c('ɬ', 'alveolar', false, 'fricative', ['lateral']);
       c('ɮ', 'alveolar', true, 'fricative', ['lateral']);
-      addmanner('approximant', true, [], '   ʋ ɹ  ɻ ɰ');
-      addmanner('approximant', true, ['lateral'], '     l ɭʎʟ');
-      addmanner('stop', true, ['ingressive'], '  ɓ  ɗ  ʄɠʛ');
-      addmanner('click', false, [], '  ʘ ǀ ǃ ǂ');
+      addmanner('approximant', true, [], '    ʋ ɹ  ɻ ɰ');
+      addmanner('approximant', true, ['lateral'], '      l ɭʎʟ');
+      addmanner('stop', true, ['ingressive'], '   ɓ  ɗ  ʄɠʛ');
+      addmanner('click', false, [], '   ʘ ǀ ǃ ǂ');
       c('ǁ', 'alveolar', false, 'click', ['lateral']);
       
       v('i', 'high', 'front', false, true, false);
