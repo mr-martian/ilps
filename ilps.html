@@ -373,12 +373,14 @@
       var addmanner = function(manner, voice, modifiers, chars) {
         for (var i = 0; i < places.length; i++) {
           if (i < chars.length && chars[i] != ' ') {
+            console.log(JSON.stringify([chars[i], places[i]]));
             c(chars[i], places[i], voice, manner, modifiers);
           }
         }
       };
-      addmanner('stop', false, [], '   p  tʈckq ʔ');
-      addmanner('stop', true, [], '   b  dɖɟgɢ');
+      addmanner('stop', false, [], '   p  t ʈckq ʔ');
+      addmanner('stop', true, [], '   b  d ɖɟgɢ');
+      c('ɡ', 'velar', true, 'stop', []);
       addmanner('stop', true, ['nasal'], '   mɱ n ɳɲŋɴ');
       addmanner('trill', true, [], '   ʙ  r    ʀ');
       addmanner('tap', true, [], '    ⱱ  ɾ ɽ');
