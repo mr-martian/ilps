@@ -121,7 +121,7 @@
         canvas.setAttribute('transform', 'scale(' + Scale + ')');
         update();
       };
-      var transform = function(inch, rotate, angle) {
+      var transform = function(inch, rotate, angle, yshift) {
         if(canvas.children.length == 0) {
           canvas.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'g'));
         }
@@ -137,13 +137,14 @@
         }
         line.appendChild(ch);
         var b = ch.getBBox();
-        ch.setAttribute("transform", "translate(" + (Xpos - b.x + 5) + ',0)');
+        var y = yshift || 0;
+        ch.setAttribute("transform", "translate(" + (Xpos - b.x + 5) + ','+y+')');
         Xpos += b.width + 5;
         if (Xpos > document.getElementById('canvas').getAttribute('width') / Scale) {
           canvas.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'g'));
           line.removeChild(ch);
           canvas.lastChild.appendChild(ch);
-          ch.setAttribute("transform", "translate("+(5-b.x)+",0)");
+          ch.setAttribute("transform", "translate("+(5-b.x)+","+y+")");
           Xpos = b.width + 5;
         }
       };
@@ -199,7 +200,7 @@
           transform(ch, false, '0');
         } else if (phone.isconsonant) {
           ch.innerHTML = cbody() + cmanner(phone.manner) + cplace(phone.place, phone.voice) + cmodifier(phone.modifiers);
-          transform(ch, phone.syllabic, '-90');
+          transform(ch, phone.syllabic, '-90', phone.syllabic ? 30 : 0);
         } else {
           addvowel(phone.height, phone.back, phone.rounding, phone.tense, phone.glide, phone.length);
         }
