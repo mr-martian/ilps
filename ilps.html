@@ -157,6 +157,9 @@
           head += '<polygon fill="black" points="2,29 2,15 2,18 -2,18 -2,26 2,26"/>';
         } else if (height == 'mid') {
           head += '<polyline points="3,17 -5,17 -2,20 -5,22 -2,24 -5,27 3,27"/>';
+        } else if (height == 'high-mid') {
+          head += '<path d="M5,17 C-5,17 2,22 -5,22 C2,22 -5,27 5,27"/>';
+        } else if (height == 'low-mid') {
         } else {
         }
         var arrow = 'l-2,-3 m2,3 l-0.5,-3 m0.5,3 l1,-3 m-1,3 l2,-2.5 m-2,2.5 l3,-2';
@@ -179,23 +182,19 @@
             ch.innerHTML += '<path d="M17,22 l3,-7 '+arrow+'"/>';
           }
         }
-        var downshift = "";
+        var adjust = "";
         if(glide)
         {
-          if(tense)
-          {
-            downshift = ' translate(' + ((6-l)/Math.sqrt(2) - 2) + ',0)';
-          } else {
-            downshift = ' translate(' + (9-l) + ',0)';
-          }
+          var dist = tense ? ((6-l)/Math.sqrt(2) - 2) : (9-l);
+          adjust = 'translate('+dist+' 0)';
         }
         //Mathematician that I am, I still have no idea what these transformations are doing
         //they were discovered by trial and error. - D.S. 2/27/17
         if ((rounding && !glide) || (!rounding && glide)) {
-          ch.innerHTML = '<g transform="scale(-1,1)' + downshift + '">' + ch.innerHTML + '</g>';
-        } else
-        {
-          ch.innerHTML = '<g transform="' + downshift + '">' + ch.innerHTML + '</g>';
+          adjust = 'scale(-1 1) ' + adjust;
+        }
+        if(adjust) {
+          ch.innerHTML = '<g transform="'+adjust+'">'+ch.innerHTML+'</g>';
         }
         transform(ch, glide, rounding ? '90' : '-90');
       };
@@ -350,7 +349,7 @@
       var entervowel = function() {
         var div = document.createElement('div');
         div.className = 'vowelinput';
-        div.innerHTML = '<span>height: </span><select onchange="update();"><option value="high">high</option><option value="mid">mid</option><option value="low">low</option></select><span>backness: </span><select onchange="update();"><option value="front">front</option><option value="central">central</option><option value="back">back</option></select><br><input type="checkbox" onchange="update();"/><span>rounded</span><input type="checkbox" onchange="update();"/><span>tense</span><input type="checkbox" onchange="update();"/><span>glide</span><input type="range" min="0" max="5" value="1" step="0.1" onchange="update();"/><span>length</span><br><span class="delete" onclick="removeinput(event);">X</span>';
+        div.innerHTML = '<span>height: </span><select onchange="update();"><option value="high">high</option><option value="high-mid">high-mid</option><option value="mid">mid</option><option value="low-mid">low-mid</option><option value="low">low</option></select><span>backness: </span><select onchange="update();"><option value="front">front</option><option value="central">central</option><option value="back">back</option></select><br><input type="checkbox" onchange="update();"/><span>rounded</span><input type="checkbox" onchange="update();"/><span>tense</span><input type="checkbox" onchange="update();"/><span>glide</span><input type="range" min="0" max="5" value="1" step="0.1" onchange="update();"/><span>length</span><br><span class="delete" onclick="removeinput(event);">X</span>';
         document.getElementById('input').appendChild(div);
         update();
       };
