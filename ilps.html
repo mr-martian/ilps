@@ -394,55 +394,57 @@
           }
         }
       };
-      addmanner('stop', false, [], '   p  t ʈckq ʔ');
+      addmanner('stop', false, [], '   p  t ʈckqʡʔ');
       addmanner('stop', true, [], '   b  d ɖɟgɢ');
       c('ɡ', 'velar', true, 'stop', []);
       addmanner('stop', true, ['nasal'], '   mɱ n ɳɲŋɴ');
       addmanner('trill', true, [], '   ʙ  r    ʀ');
-      addmanner('tap', true, [], '    ⱱ  ɾ ɽ');
+      addmanner('tap', true, [], '    ⱱ ɾ ɽ');
       addmanner('fricative', false, [], '   ɸfθsʃʂçxχħh');
       addmanner('fricative', true, [], '   βvðzʒʐʝɣʁʕɦ');
       c('ɬ', 'alveolar', false, 'fricative', ['lateral']);
       c('ɮ', 'alveolar', true, 'fricative', ['lateral']);
-      addmanner('approximant', true, [], '    ʋ ɹ  ɻ ɰ');
+      addmanner('approximant', true, [], '    ʋ ɹ ɻ ɰ');
       addmanner('approximant', true, ['lateral'], '      l ɭʎʟ');
-      addmanner('stop', true, ['ingressive'], '   ɓ  ɗ  ʄɠʛ');
-      addmanner('click', false, [], '   ʘ ǀ ǃ ǂ');
+      addmanner('stop', true, ['ingressive'], '   ɓ  ɗ ᶑʄɠʛ');
+      addmanner('click', false, [], '   ʘ ǀǃ  ǂ');
       c('ǁ', 'alveolar', false, 'click', ['lateral']);
       
-      v('i', 'high', 'front', false, true, false);
-      v('y', 'high', 'front', true, true, false);
-      v('ɨ', 'high', 'central', false, true, false);
-      v('ʉ', 'high', 'central', true, true, false);
-      v('ɯ', 'high', 'back', false, true, false);
-      v('u', 'high', 'back', true, true, false);
+      v('i', 'high', 'front', false, false, false);
+      v('y', 'high', 'front', true, false, false);
+      v('ɨ', 'high', 'central', false, false, false);
+      v('ʉ', 'high', 'central', true, false, false);
+      v('ɯ', 'high', 'back', false, false, false);
+      v('u', 'high', 'back', true, false, false);
       v('ɪ', 'high', 'front', false, false, false);
       v('ʏ', 'high', 'front', true, false, false);
       v('ʊ', 'high', 'back', true, false, false);
       
-      v('e', 'mid', 'front', false, true, false);
-      v('ø', 'mid', 'front', true, true, false);
-      v('ɘ', 'mid', 'central', false, true, false);
-      v('ɵ', 'mid', 'central', true, true, false);
-      v('ɤ', 'mid', 'back', false, true, false);
-      v('o', 'mid', 'back', true, true, false);
-      v('ɛ', 'mid', 'front', false, false, false);
-      v('œ', 'mid', 'front', true, false, false);
-      v('ɜ', 'mid', 'central', false, false, false);
+      v('e', 'high-mid', 'front', false, false, false);
+      v('ø', 'high-mid', 'front', true, false, false);
+      v('ɘ', 'high-mid', 'central', false, false, false);
+      v('ɵ', 'high-mid', 'central', true, false, false);
+      v('ɤ', 'high-mid', 'back', false, false, false);
+      v('o', 'high-mid', 'back', true, false, false);
+
       v('ə', 'mid', 'central', false, false, false);
-      v('ɐ', 'mid', 'central', false, false, false);
-      v('ɞ', 'mid', 'central', true, false, false);
-      v('ʌ', 'mid', 'back', false, false, false);
-      v('ɔ', 'mid', 'back', true, false, false);
+
+      v('ɛ', 'low-mid', 'front', false, false, false);
+      v('œ', 'low-mid', 'front', true, false, false);
+      v('ɜ', 'low-mid', 'central', false, false, false);
+      v('ɞ', 'low-mid', 'central', true, false, false);
+      v('ʌ', 'low-mid', 'back', false, false, false);
+      v('ɔ', 'low-mid', 'back', true, false, false);
+
+      v('ɐ', 'low', 'central', false, false, false);
+      v('a', 'low', 'front', false, false, false);
+      v('ɶ', 'low', 'front', true, false, false);
+      v('ɑ', 'low', 'back', false, false, false);
+      v('ɒ', 'low', 'back', true, false, false);
+      v('æ', 'low', 'front', false, false, false);
       
-      v('a', 'low', 'front', false, true, false);
-      v('ɶ', 'low', 'front', true, true, false);
-      v('ɑ', 'low', 'back', false, true, false);
-      v('ɒ', 'low', 'back', true, true, false);
-      v('æ', 'low', 'front', false, true, false);
-      
-      v('j', 'high', 'front', false, true, true);
-      v('w', 'high', 'back', true, true, true);
+      v('j', 'high', 'front', false, false, true);
+      v('w', 'high', 'back', true, false, true);
     </script>
   </body>
 </html>
