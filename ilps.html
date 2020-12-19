@@ -9,6 +9,9 @@
       .vowelinput {
         border: 1px dashed black;
       }
+      .delete {
+        color: red;
+      }
     </style>
   </head>
   <body>
@@ -21,6 +24,43 @@
     <div id="input"></div>
     <svg width="1000" height="500" id="canvas"><g id="out" stroke-width="1" stroke="black" fill="none" transform="scale(5)"></g></svg>
     <script>
+      var places = ['bimanual', 'faciomanual', 'linguolabial', 'bilabial', 'labiodental', 'dental', 'alveolar', 'postalveolar', 'retroflex', 'palatal', 'velar', 'uvular', 'pharyngeal', 'glottal'];
+      var manners = ['stop', 'fricative', 'trill', 'tap', 'approximant', 'click'];
+      var modifiers = ['nasal', 'lateral', 'ejective', 'ingressive', 'aspirated'];
+      var heights = ['high', 'near-high', 'high-mid', 'mid', 'low-mid', 'near-low', 'low'];
+      var backnesses = ['front', 'central', 'back'];
+
+      var consonanthats = {
+        // top hat
+        'stop': '<polygon fill="black" points="3,6 17,6 14,6 14,2 6,2 6,6"/>',
+        // bald
+        'fricative': '',
+        // halo
+        'trill': '<ellipse cx="10" cy="3" rx="4" ry="2"/>',
+        // crown
+        'tap': '<polyline points="5,8 5,0 7,3 10,0 13,3 15,0 15,8"/>',
+        // horns
+        'approximant': '<path d="M12,6 C14,4 14,4 13,1 M8,6 C6,4 6,4 7,1"/>',
+        // wizard hat
+        'click': '<polygon points="6.5,6 13.5,6 10,0" fill="black"/>'
+      };
+      var vowelhats = {
+        // top hat
+        'high': '<polygon fill="black" points="2,29 2,15 2,18 -2,18 -2,26 2,26"/>',
+        // halo
+        'near-high': '<ellipse cx="-2" cy="22" rx="2" ry="4"/>',
+        // kalpak
+        'high-mid': '<path d="M2,27 v-10 l-2,-1 v12 l2,-1" fill="black"/><path d="M0,25 C-9,23 -6,22 -7,22 h7 h-7 M0,19 C-9,21 -6,22 -7,22"/>',
+        // crown
+        'mid': '<polyline points="3,17 -5,17 -2,20 -5,22 -2,24 -5,27 3,27"/>',
+        // janjin
+        'low-mid': '<path d="M5,17 C-5,17 2,22 -5,22 C2,22 -5,27 5,27"/>',
+        // wizard hat
+        'near-low': '<polygon points="1.5,25.5 1.5,18.5 -4.5,22" fill="black"/>',
+        // bald
+        'low': ''
+      };
+
       var cbody = function() {
         return '<g class="cbody"><line x1="5" y1="30" x2="10" y2="22"/><line x1="15" y1="30" x2="10" y2="22"/><line x1="10" y1="22" x2="10" y2="15"/><circle cx="10" cy="10" r="5"/></g>';
       };
@@ -29,45 +69,59 @@
         var arms = '<line x1="5" y1="18" x2="15" y2="18"/>';
         switch (pl) {
           case "bimanual":
-            ret += arms + '<line x1="5" y1="23" x2="5" y2="13"/><rect x="0" y="13" width="5" height="3" fill="black"/>';
-            break;
-          case "faciomanual":
+            // triangle
             ret += arms + '<polygon points="5,18 0,14 0,22"/>';
             break;
+          case "faciomanual":
+            // axe
+            ret += arms + '<line x1="5" y1="23" x2="5" y2="13"/><rect x="0" y="13" width="5" height="3" fill="black"/>';
+            break;
           case "linguolabial":
+            // bird
             ret += arms + '<path d="m 4.5,17.5 c 1.5,-5 2,0 2,0 0,0 1.5,-5 2,0"/>';
             break;
           case "bilabial":
+            // sword
             ret += arms + '<line x1="6" y1="20" x2="1" y2="10"/><line x1="2" y1="19" x2="7" y2="16"/>';
             break;
           case "labiodental":
+            // club
             ret += arms + '<path d="M5,19 L3,8 C1,6 1,6 0,9 z"/>';
             break;
           case "dental":
+            // torch
             ret += arms + '<path d="M5,19 L4,16 l-3,-3 m3,3 l-2,-3 m2,3 l-1,-3 m1,3 l0,-3 m0,3 l1,-3 m-1,3"/>';
             break;
           case "alveolar":
+            // arms on the same side
             ret += '<line x1="10" y1="18" x2="5" y2="14"/><line x1="10" y1="18" x2="5" y2="22"/>';
             break;
           case "postalveolar":
+            // ball
             ret += arms + '<circle cx="3" cy="18" r="2"/>';
             break;
           case "retroflex":
+            // cane
             ret += arms + '<path d="M5,19 a 2 2 0 0,0 -4,0 V 30"/>';
             break;
           case "palatal":
+            // staff
             ret += arms + '<line x1="5" y1="30" x2="5" y2="14"/>';
             break;
           case "velar":
+            // megaphone
             ret += arms + '<polygon points="4,20 2,18 6,14"/>';
             break;
           case "uvular":
+            // balloon
             ret += arms + '<line x1="5" y1="19" x2="3" y2="10"/><ellipse cx="3" cy="7" rx="2" ry="3"/>';
             break;
           case "pharyngeal":
+            // pizza
             ret += '<line x1="10" y1="18" x2="5" y2="14"/><line x1="10" y1="18" x2="5" y2="22"/><polygon points="-3,14 -3,22 5,22 5,14"/><circle cx="1" cy="18" r="3"/>';
             break;
           case "glottal":
+            // bow and arrow
             ret += arms + '<path d="M15,18 L5,26 a 4 8 0 1,1 0,-16 z"/><line x1="5" y1="18" x2="1" y2="18"/>';
             break;
           default:
@@ -75,39 +129,28 @@
         };
         return ret + "</g>";
       };
-      var cmanner = function(manner) {
-        switch (manner) {
-          case 'stop':
-            return '<polygon fill="black" points="3,6 17,6 14,6 14,2 6,2 6,6"/>';
-          case 'trill':
-            return '<ellipse cx="10" cy="3" rx="4" ry="2"/>';
-          case 'tap':
-            return '<polyline points="5,8 5,0 7,3 10,0 13,3 15,0 15,8"/>';
-          case 'approximant':
-            return '<path d="M12,6 C14,4 14,4 13,1 M8,6 C6,4 6,4 7,1"/>';
-          case 'click':
-            return '<polygon points="6.5,6 13.5,6 10,0" fill="black"/>';
-          default:
-            return "";
-        };
-      };
       var cmodifier = function(mod) {
         var ret = "<g>";
         for (var i = 0; i < mod.length; i++) {
           switch (mod[i]) {
             case "nasal":
+              // beard
               ret += '<polygon points="6.5,14 13.5,14 10,18" fill="black"/>';
               break;
             case "lateral":
+              // fat body
               ret += '<ellipse cx="10" cy="18" rx="2" ry="3" fill="white"/>';
               break;
             case "aspirated":
+              // ears
               ret += '<ellipse cx="16" cy="10" rx="1" ry="2"/><ellipse cx="4" cy="10" rx="1" ry="2"/>';
               break;
             case "ejective":
+              // hair
               ret += '<line x1="14" y1="7" x2="19" y2="11"/><line x1="6" y1="7" x2="1" y2="11"/>';
               break;
             case "ingressive":
+              // boots
               ret += '<rect x="5" y="27" width="3" height="3" fill="black"/><rect x="12" y="27" width="3" height="3" fill="black"/>';
           };
         }
@@ -153,18 +196,7 @@
         var l = 6 * (length || 1);
         var legs = 'l '+l+',6 m -'+l+',-6 l '+l+',-6';
         var head = '<circle cx="5" cy="22" r="5"/>';
-        if (height == 'high') {
-          head += '<polygon fill="black" points="2,29 2,15 2,18 -2,18 -2,26 2,26"/>';
-        } else if (height == 'mid') {
-          head += '<polyline points="3,17 -5,17 -2,20 -5,22 -2,24 -5,27 3,27"/>';
-        } else if (height == 'high-mid') {
-          // Kalpak
-          head += '<path d="M2,27 v-10 l-2,-1 v12 l2,-1" fill="black"/><path d="M0,25 C-9,23 -6,22 -7,22 h7 h-7 M0,19 C-9,21 -6,22 -7,22"/>'
-        } else if (height == 'low-mid') {
-          // Janjin
-          head += '<path d="M5,17 C-5,17 2,22 -5,22 C2,22 -5,27 5,27"/>';
-        } else {
-        }
+        head += vowelhats[height];
         var arrow = 'l-2,-3 m2,3 l-0.5,-3 m0.5,3 l1,-3 m-1,3 l2,-2.5 m-2,2.5 l3,-2';
         var sword = '<line x1="15" y1="22" x2="16" y2="13"/><line x1="13.5" y1="15" x2="18" y2="16"/>';
         if (tense) {
@@ -188,7 +220,7 @@
         var adjust = "";
         if(glide)
         {
-          var dist = tense ? ((6-l)/Math.sqrt(2) - 2) : (9-l);
+          var dist = tense ? (6-l)/Math.sqrt(2) : (11-l);
           adjust = 'translate('+dist+' 0)';
         }
         //Mathematician that I am, I still have no idea what these transformations are doing
@@ -204,10 +236,10 @@
       var drawphone = function(phone) {
         var ch = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         if (phone == null) {
-          ch.innerHTML = '<polygon points="0,0 10,0 10,18 0,18"/><line x1="0" y1="0" x2="10" y2="18"/><line x1="10" y1="0" x2="0" y2="18"/>';
+          ch.innerHTML = '<g transform="translate(0,12)"><polygon points="0,0 10,0 10,18 0,18"/><line x1="0" y1="0" x2="10" y2="18"/><line x1="10" y1="0" x2="0" y2="18"/></g>';
           transform(ch, false, '0');
         } else if (phone.isconsonant) {
-          ch.innerHTML = cbody() + cmanner(phone.manner) + cplace(phone.place, phone.voice) + cmodifier(phone.modifiers);
+          ch.innerHTML = cbody() + consonanthats[phone.manner] + cplace(phone.place, phone.voice) + cmodifier(phone.modifiers);
           transform(ch, phone.syllabic, '-90', phone.syllabic ? 30 : 0);
         } else {
           addvowel(phone.height, phone.back, phone.rounding, phone.tense, phone.glide, phone.length);
@@ -235,9 +267,6 @@
           length: (length || 1)
         };
       };
-      var places = ['bimanual', 'faciomanual', 'linguolabial', 'bilabial', 'labiodental', 'dental', 'alveolar', 'postalveolar', 'retroflex', 'palatal', 'velar', 'uvular', 'pharyngeal', 'glottal'];
-      var manners = ['stop', 'fricative', 'trill', 'tap', 'approximant', 'click'];
-      var modifiers = ['nasal', 'lateral', 'ejective', 'ingressive', 'aspirated'];
       var getinput = function() {
         var el = document.getElementById('input');
         var ls = [];
@@ -329,18 +358,23 @@
         div.innerHTML = '<input type="text" onkeyup="update();"/><span class="delete" onclick="removeinput(event);">X</span>';
         document.getElementById('input').appendChild(div);
       };
+      var makeselect = function(ops) {
+        var str = '<select onchange="update();">';
+        for (var i = 0; i < ops.length; i++) {
+          str += '<option value="' + ops[i] + '">' + ops[i] + '</option>';
+        }
+        str += '</select>';
+        return str;
+      }
+      var makecheck = function(name) {
+        return '<input type="checkbox" onchange="update();" value="' + name + '"/><span>' + name + '</span>';
+      }
       var entercons = function() {
-        var str = '<span>place: </span><select class="place" onchange="update();">';
-        for (var i = 0; i < places.length; i++) {
-          str += '<option value="' + places[i] + '">' + places[i] + '</option>';
-        }
-        str += '</select><span>manner: </span><select class="manner" onchange="update();">';
-        for (var i = 0; i < manners.length; i++) {
-          str += '<option value="' + manners[i] + '">' + manners[i] + '</option>';
-        }
-        str += '</select><br><input type="checkbox" onchange="update();"/><span>voiced</span><input type="checkbox" onchange="update();"/><span>syllabic</span>';
+        var str = '<span>place: </span>' + makeselect(places);
+        str += '<span>manner: </span>' + makeselect(manners);
+        str += '<br/>' + makecheck('voiced') + makecheck('syllabic');
         for (var m = 0; m < modifiers.length; m++) {
-          str += '<input type="checkbox" onchange="update();" value="' + modifiers[m] + '"/><span>' + modifiers[m] + '</span>';
+          str += makecheck(modifiers[m]);
         }
         str += '<br><span class="delete" onclick="removeinput(event);">X</span>';
         var div = document.createElement('div');
@@ -352,7 +386,11 @@
       var entervowel = function() {
         var div = document.createElement('div');
         div.className = 'vowelinput';
-        div.innerHTML = '<span>height: </span><select onchange="update();"><option value="high">high</option><option value="high-mid">high-mid</option><option value="mid">mid</option><option value="low-mid">low-mid</option><option value="low">low</option></select><span>backness: </span><select onchange="update();"><option value="front">front</option><option value="central">central</option><option value="back">back</option></select><br><input type="checkbox" onchange="update();"/><span>rounded</span><input type="checkbox" onchange="update();"/><span>tense</span><input type="checkbox" onchange="update();"/><span>glide</span><input type="range" min="0" max="5" value="1" step="0.1" onchange="update();"/><span>length</span><br><span class="delete" onclick="removeinput(event);">X</span>';
+        var str = '<span>height: </span>' + makeselect(heights);
+        str += '<span>backness: </span>' + makeselect(backnesses);
+        str += '<br/>' + makecheck('rounded') + makecheck('tense') + makecheck('glide');
+        str += '<input type="range" min="0" max="5" value="1" step="0.1" onchange="update();"/><span>length</span><br><span class="delete" onclick="removeinput(event);">X</span>';
+        div.innerHTML = str;
         document.getElementById('input').appendChild(div);
         update();
       };
@@ -416,9 +454,10 @@
       v('ʉ', 'high', 'central', true, false, false);
       v('ɯ', 'high', 'back', false, false, false);
       v('u', 'high', 'back', true, false, false);
-      v('ɪ', 'high', 'front', false, false, false);
-      v('ʏ', 'high', 'front', true, false, false);
-      v('ʊ', 'high', 'back', true, false, false);
+
+      v('ɪ', 'near-high', 'front', false, false, false);
+      v('ʏ', 'near-high', 'front', true, false, false);
+      v('ʊ', 'near-high', 'back', true, false, false);
       
       v('e', 'high-mid', 'front', false, false, false);
       v('ø', 'high-mid', 'front', true, false, false);
@@ -436,12 +475,13 @@
       v('ʌ', 'low-mid', 'back', false, false, false);
       v('ɔ', 'low-mid', 'back', true, false, false);
 
-      v('ɐ', 'low', 'central', false, false, false);
+      v('ɐ', 'near-low', 'central', false, false, false);
+      v('æ', 'near-low', 'front', false, false, false);
+
       v('a', 'low', 'front', false, false, false);
       v('ɶ', 'low', 'front', true, false, false);
       v('ɑ', 'low', 'back', false, false, false);
       v('ɒ', 'low', 'back', true, false, false);
-      v('æ', 'low', 'front', false, false, false);
       
       v('j', 'high', 'front', false, false, true);
       v('w', 'high', 'back', true, false, true);
