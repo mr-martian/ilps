@@ -284,9 +284,10 @@
                 continue;
               }
               var c = JSON.parse(JSON.stringify(ipa[s[j]]));
-              while ("̥̃ʰ̩ʼˑ̆ː".includes(s[j+1])) {
+              while ("̥̃ʰ̩ʼ̊ˑ̆ː".includes(s[j+1])) {
                 j++;
                 switch (s[j]) {
+                  case "̊":
                   case "̥":
                     if (c.isconsonant) {
                       c.voice = false;
